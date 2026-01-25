@@ -12,7 +12,7 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
-     * hi how are you
+     * hisplay the user's profile form.
      */
     public function edit(Request $request): View
     {
