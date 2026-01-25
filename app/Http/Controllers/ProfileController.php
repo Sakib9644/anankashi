@@ -12,7 +12,7 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
-     * hi
+     * hi how are you
      */
     public function edit(Request $request): View
     {
