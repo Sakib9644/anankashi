@@ -17,7 +17,6 @@ class User extends Authenticatable implements JWTSubject
 
     protected $guard_name = ['api', 'web'];
 
-    protected $guarded = [];
 
     public function getJWTIdentifier()
     {
@@ -42,7 +41,9 @@ class User extends Authenticatable implements JWTSubject
         'otp',
         'otp_expires_at',
         'last_activity_at',
-        'slug'
+        'slug',
+        'verification_token',
+        'otp_verified_at'
     ];
 
     /**

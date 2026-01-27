@@ -33,44 +33,43 @@ class RegisterController extends Controller
     }
     public function register(Request $request)
     {
-        // If this is NOT a FormRequest, validate like this
+        DB::beginTransaction();
+
         $validatedData = $request->validate([
-            'name'        => 'required|string|max:255',
-            'email'   => 'required|email|unique:users,email',
-            'password'        => 'required|string|min:8|confirmed',
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
         ]);
-
         try {
-            $user = DB::transaction(function () use ($validatedData) {
 
-                $verificationToken = Str::random(64);
+            $verificationToken = Str::random(64);
 
             $user = User::create([
-                    'name'            => $validatedData['name'],
-                    'email'               => $validatedData['email'],
-                    'password'            => Hash::make($validatedData['password']),
-                    'role'                => 'teacher',
-                    'email_verified_at'   => null,
-                    'verification_token'  => $verificationToken,
-                    'slug'                => Str::random(8),
-                ]);
-            });
+                'name'               => $validatedData['name'],
+                'email'              => $validatedData['email'],
+                'password'           => Hash::make($validatedData['password']),
+                'role'               => 'teacher',
+                'otp_verified_at'  => null,
+                'verification_token' => $verificationToken,
+                'slug'               => Str::random(8),
+            ]);
 
-            // Send verification email AFTER commit
             $verificationUrl = route('verify.email', [
                 'token' => $user->verification_token
             ]);
 
-            dd($verificationUrl);
-
             Mail::to($user->email)
                 ->send(new UserVerificationMail($user, $verificationUrl));
 
+            DB::commit(); // ✅ important
+
             return response()->json([
                 'status'  => true,
-                'message' => 'Registration successful. Please check your email for verification.',
+                'message' => 'Registration successful. Please check your email.',
             ], 201);
         } catch (Throwable $e) {
+
+            DB::rollBack(); // ✅ now it works
 
             Log::error('Registration failed', [
                 'error' => $e->getMessage()
@@ -78,10 +77,11 @@ class RegisterController extends Controller
 
             return response()->json([
                 'status'  => false,
-                'message' => 'Registration failed. Please try again.',
+                'message' => 'Something went wrong. Please try again.',
             ], 500);
         }
     }
+
     // public function VerifyEmail(Request $request)
     // {
     //     $request->validate([
@@ -117,29 +117,29 @@ class RegisterController extends Controller
     //     }
     // }
 
-    public function verifyEmail($token)
+    public function verifyEmail(Request $rquest)
     {
+
+        $token = $rquest->input('token');
         try {
             $user = User::where('verification_token', $token)->first();
-            $admin = User::where('role', 'admin')->first();
 
             if (!$user) {
                 // Invalid token
-                return redirect('https://cryptax-dev.vercel.app/login?error=invalid_token&message=' . urlencode('Invalid verification token.'));
+                return redirect('https://cryptax-dev.vercel.app/signin?error=invalid_token&message=' . urlencode('Invalid verification token.'));
             }
 
             // Check if already verified
-            if ($user->email_verified_at) {
-                return redirect('https://cryptax-dev.vercel.app/login?error=already_verified&message=' . urlencode('Email is already verified. You can login now.'));
+            if ($user->otp_verified_at) {
+                return redirect('https://cryptax-dev.vercel.app/signin?error=already_verified&message=' . urlencode('Email is already verified. You can login now.'));
             }
 
             DB::beginTransaction();
 
             try {
                 // Update user verification status
-                $user->email_verified_at = now();
-                $user->is_email_verified = true;
-                $user->verification_token = null; // clear token
+                $user->otp_verified_at = now();
+                $user->otp = null; // clear token
                 $user->save();
 
 
@@ -147,16 +147,16 @@ class RegisterController extends Controller
                 DB::commit();
 
                 // redirect with success message
-                return redirect('https://cryptax-dev.vercel.app/login?verified=true&message=' . urlencode('Email verified successfully! Please wait for school approval from admin.'));
+                return redirect('https://cryptax-dev.vercel.app/signin?verified=true&message=' . urlencode('Email verified successfully.'));
             } catch (Exception $e) {
                 DB::rollBack();
                 Log::error('Email verification process failed: ' . $e->getMessage());
 
-                return redirect('https://cryptax-dev.vercel.app/login?error=verification_failed&message=' . urlencode('Verification failed. Please try again or contact support.'));
+                return redirect('https://cryptax-dev.vercel.app/signin?error=verification_failed&message=' . urlencode('Verification failed. Please try again or contact support.'));
             }
         } catch (Exception $e) {
             Log::error('Email verification error: ' . $e->getMessage());
-            return redirect('https://cryptax-dev.vercel.app/login?error=server_error&message=' . urlencode('Something went wrong. Please try again later.'));
+            return redirect('https://cryptax-dev.vercel.app/signin?error=server_error&message=' . urlencode('Something went wrong. Please try again later.'));
         }
     }
 
