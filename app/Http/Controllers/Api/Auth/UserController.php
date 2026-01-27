@@ -15,7 +15,7 @@ class UserController extends Controller
     public function __construct()
     {
         parent::__construct();
-        $this->select = ['id', 'first_name', 'last_name','phone','company_name','Chamber_of_Commerce_kvk_number','Chamber_of_Commerce', 'email', 'avatar', 'gender', 'dob', 'country', 'address'];
+        $this->select = ['id', 'first_name', 'last_name', 'phone', 'company_name', 'Chamber_of_Commerce_kvk_number', 'Chamber_of_Commerce', 'email', 'avatar', 'gender', 'dob', 'country', 'address'];
     }
 
     public function me()
@@ -26,6 +26,9 @@ class UserController extends Controller
 
     public function updateProfile(Request $request)
     {
+        $user = auth('api')->user();
+
+        // Validate the request
         $validatedData = $request->validate([
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             'password' => 'nullable|string|min:6|confirmed',
@@ -36,32 +39,44 @@ class UserController extends Controller
             'gender' => 'nullable|string|max:255',
             'dob' => 'nullable|date',
             'country' => 'nullable|string|max:255',
-            'address' => 'nullable|string|max:255',
             'company_name' => 'nullable|string|max:255',
         ]);
 
-        if (!empty($validatedData['password'])) {
-            $validatedData['password'] = bcrypt($validatedData['password']);
-        } else if (array_key_exists('password', $validatedData)) {
-            unset($validatedData['password']);
-        }
+        // Fill all request fields directly into the user model
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->phone = $request->phone;
+        $user->company_name = $request->company_name;
+        $user->Chamber_of_Commerce_kvk_number = $request->Chamber_of_Commerce_kvk_number;
+        $user->Chamber_of_Commerce = $request->Chamber_of_Commerce;
+        $user->address = $request->address;
+        $user->gender = $request->gender;
+        $user->dob = $request->dob;
+        $user->country = $request->country;
 
-        $user = auth('api')->user();
 
+
+        // Handle avatar separately
         if ($request->hasFile('avatar')) {
-            if (!empty($user->avatar)) {
+            if ($user->avatar) {
                 Helper::fileDelete(public_path($user->getRawOriginal('avatar')));
             }
-            $validatedData['avatar'] = Helper::fileUpload($request->file('avatar'), 'user/avatar', getFileName($request->file('avatar')));
-        } else {
-            $validatedData['avatar'] = $user->avatar;
+            $user->avatar = Helper::fileUpload(
+                $request->file('avatar'),
+                'user/avatar',
+                getFileName($request->file('avatar'))
+            );
         }
 
-        $user->update($validatedData);
+        // Save the user
+        $user->save();
 
+        // Return updated user data
         $data = User::select($this->select)->find($user->id);
         return Helper::jsonResponse(true, 'Profile updated successfully', 200, $data);
     }
+
+
 
     public function updateAvatar(Request $request)
     {
@@ -99,5 +114,4 @@ class UserController extends Controller
         $user->forceDelete();
         return Helper::jsonResponse(true, 'Profile deleted successfully', 200);
     }
-
 }
