@@ -9,9 +9,10 @@ return [
     'reverb' => env('REVERB', 'off'),
 
     //yes||no
-    'recaptcha' => env('RECAPTCHA_ENABLE', 'no'), 
+    'recaptcha' => env('RECAPTCHA_ENABLE', 'no'),
 
     'pagination' => env('PAGINATION', '12'),
 
-    'google-map' => env('GOOGLE_MAPS_API_KEY', 'AIzaSyDl7ias7CMBPanjqPisVXwhXXVth21Cl5Y')
+    'google-map' => env('GOOGLE_MAPS_API_KEY', 'AIzaSyDl7ias7CMBPanjqPisVXwhXXVth21Cl5Y'),
+    'frontend' => 'https://cryptax-dev.vercel.app/signin'
 ];

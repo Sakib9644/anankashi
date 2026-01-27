@@ -126,12 +126,12 @@ class RegisterController extends Controller
 
             if (!$user) {
                 // Invalid token
-                return redirect('https://cryptax-dev.vercel.app/signin?error=invalid_token&message=' . urlencode('Invalid verification token.'));
+                return redirect(Config('settings.frontend').'?error=invalid_token&message=' . urlencode('Invalid verification token.'));
             }
 
             // Check if already verified
             if ($user->otp_verified_at) {
-                return redirect('https://cryptax-dev.vercel.app/signin?error=already_verified&message=' . urlencode('Email is already verified. You can login now.'));
+                return redirect(Config('settings.frontend').'?error=already_verified&message=' . urlencode('Email is already verified. You can login now.'));
             }
 
             DB::beginTransaction();
@@ -147,16 +147,16 @@ class RegisterController extends Controller
                 DB::commit();
 
                 // redirect with success message
-                return redirect('https://cryptax-dev.vercel.app/signin?verified=true&message=' . urlencode('Email verified successfully.'));
+                return redirect(Config('settings.frontend').'?verified=true&message=' . urlencode('Email verified successfully.'));
             } catch (Exception $e) {
                 DB::rollBack();
                 Log::error('Email verification process failed: ' . $e->getMessage());
 
-                return redirect('https://cryptax-dev.vercel.app/signin?error=verification_failed&message=' . urlencode('Verification failed. Please try again or contact support.'));
+                return redirect(Config('settings.frontend').'?error=verification_failed&message=' . urlencode('Verification failed. Please try again or contact support.'));
             }
         } catch (Exception $e) {
             Log::error('Email verification error: ' . $e->getMessage());
-            return redirect('https://cryptax-dev.vercel.app/signin?error=server_error&message=' . urlencode('Something went wrong. Please try again later.'));
+            return redirect(Config('settings.frontend').'?error=server_error&message=' . urlencode('Something went wrong. Please try again later.'));
         }
     }
 
