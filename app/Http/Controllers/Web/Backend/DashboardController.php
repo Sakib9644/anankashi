@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 
 class DashboardController extends Controller
@@ -75,6 +76,8 @@ class DashboardController extends Controller
     $totalTransactions = \App\Models\Transaction::where('status', 'success')->count();
     $totalIncrement = \App\Models\Transaction::where('status', 'success')->where('type', 'increment')->sum('amount');
     $totalDecrement = \App\Models\Transaction::where('status', 'success')->where('type', 'decrement')->sum('amount');
+
+    session()->forget('t-success');
 
     return view('backend.layouts.dashboard', compact(
         'userAnalytics',

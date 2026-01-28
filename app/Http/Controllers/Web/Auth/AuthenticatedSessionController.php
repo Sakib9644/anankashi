@@ -30,7 +30,6 @@ class AuthenticatedSessionController extends Controller
             $request->authenticate();
 
             $request->session()->regenerate();
-            session()->put('t-success', 'Password Confirmed Successfully');
             return app(WebCustomRedirectMiddleware::class)->handle($request, function () {});
 
         }else{

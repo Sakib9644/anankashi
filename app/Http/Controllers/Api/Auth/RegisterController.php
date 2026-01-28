@@ -67,19 +67,19 @@ class RegisterController extends Controller
 
             return response()->json([
                 'status'  => true,
+                'code'    => 200,
                 'message' => 'Registration successful. Please check your email.',
-            ], 201);
+            ], 200);
         } catch (Throwable $e) {
 
             DB::rollBack(); // ✅ now it works
 
-            Log::error('Registration failed', [
-                'error' => $e->getMessage()
-            ]);
 
             return response()->json([
                 'status'  => false,
                 'message' => 'Something went wrong. Please try again.',
+                'code'    => 500,
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }

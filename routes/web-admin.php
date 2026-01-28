@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\Backend\NewsController;
 use App\Http\Controllers\Web\Backend\Access\PermissionController;
 use App\Http\Controllers\Web\Backend\Access\RoleController;
 use App\Http\Controllers\Web\Backend\Access\UserController;
@@ -284,6 +285,17 @@ Route::group(['middleware' => ['web-admin']], function () {
         Route::put('setting/profile/update/Password', 'UpdatePassword')->name('setting.profile.update.Password');
         Route::post('setting/profile/update/Picture', 'UpdateProfilePicture')->name('update.profile.picture');
     });
+
+    Route::controller(NewsController::class)->group(function () {
+
+    Route::get('news', 'index')->name('news.index');
+    Route::get('news/create', 'create')->name('news.create');
+    Route::post('news/store', 'store')->name('news.store');
+    Route::get('news/edit/{id}', 'edit')->name('news.edit');
+    Route::put('news/update/{id}', 'update')->name('news.update');
+    Route::delete('news/delete/{id}', 'destroy')->name('news.destroy');
+    Route::get('news/status/{id}', 'status')->name('news.status');
+});
 
     //! Route for Mail Settings
     Route::controller(MailSettingController::class)->group(function () {
