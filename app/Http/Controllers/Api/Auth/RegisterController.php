@@ -86,7 +86,7 @@ class RegisterController extends Controller
 
             DB::rollBack();
 
-            return Helper::jsonErrorResponse($e->getMessage(), 500);
+            return Helper::jsonErrorResponse($e->errors(), 500);
         }
     }
 
