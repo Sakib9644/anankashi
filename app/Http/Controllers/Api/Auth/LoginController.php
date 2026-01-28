@@ -76,12 +76,7 @@ class LoginController extends Controller
             ], 200);
 
         } catch (Exception $e) {
-              return response()->json([
-            'status'  => false,
-            'code'    => 500,
-            'message' => $e->errors(),
-
-        ], 500);
+            return Helper::jsonErrorResponse($e->getMessage(), 500);
         }
     }
 
