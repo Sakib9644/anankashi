@@ -65,7 +65,7 @@ class RegisterController extends Controller
                 'otp_verified_at'     => null,
                 'verification_token'  => $verificationToken,
                 'slug'                => Str::random(8),
-                'is_terms'            => $validatedData['is_terms'] ? 'safe' : 'unsafe', // ✅ now safe
+                'is_terms'            => $validatedData['is_terms'] ? 0 : 1, // ✅ now safe
             ]);
 
             // Create verification URL
