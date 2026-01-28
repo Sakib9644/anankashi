@@ -4,19 +4,19 @@
             @csrf
             @method('PUT')
 
-            <h5 class=" mb-4">Edit News</h5>
+            <h5 class="mb-4">Edit News</h5>
 
             <!-- News Title -->
-            <div class="d-flex justify-content-center">
-                <div class="mb-3 col-md-6">
-                    <label for="news_title" class="form-label fw-semibold">News Title</label>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="news_title" class="form-label fw-semibold text-start d-block">News Title</label>
                     <input type="text" id="news_title" class="form-control" name="news_title"
                         value="{{ old('news_title', $news->title) }}">
                 </div>
 
                 <!-- Type -->
-                <div class="mb-3 col-md-6">
-                    <label for="type" class="form-label fw-semibold">Type</label>
+                <div class="col-md-6 mb-3">
+                    <label for="type" class="form-label fw-semibold text-start d-block">Type</label>
                     <input type="text" id="type" class="form-control" name="type"
                         value="{{ old('type', $news->type) }}">
                 </div>
@@ -24,20 +24,20 @@
 
             <!-- Short Description -->
             <div class="mb-3">
-                <label for="short_description" class="form-label fw-semibold">Short Description</label>
+                <label for="short_description" class="form-label fw-semibold text-start d-block">Short Description</label>
                 <textarea id="short_description" class="form-control summernote" name="short_description">{{ old('short_description', $news->short_description) }}</textarea>
             </div>
 
             <!-- Thumbnail -->
             <div class="mb-3">
-                <label for="thumbnail" class="form-label fw-semibold">Thumbnail</label>
+                <label for="thumbnail" class="form-label fw-semibold text-start d-block">Thumbnail</label>
                 <input type="file" id="thumbnail" class="form-control" name="thumbnail">
                 @if ($news->thumbnail)
                     <img src="{{ asset($news->thumbnail) }}" width="120" class="mt-2">
                 @endif
             </div>
 
-            <h5 class="mt-4 mb-3 text-center">News Details</h5>
+            <h5 class="mt-4 mb-3 text-start">News Details</h5>
 
             <div id="news-details-wrapper">
                 @foreach ($news->details as $index => $detail)
@@ -52,14 +52,14 @@
 
                         <!-- Detail Title -->
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Detail Title</label>
+                            <label class="form-label fw-semibold text-start d-block">Detail Title</label>
                             <input type="text" name="details[{{ $index }}][title]" class="form-control"
                                 value="{{ $detail->title }}">
                         </div>
 
                         <!-- Description -->
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Description</label>
+                            <label class="form-label fw-semibold text-start d-block">Description</label>
                             <textarea name="details[{{ $index }}][description]" class="form-control summernote">{{ $detail->description }}</textarea>
                         </div>
 
@@ -91,6 +91,16 @@
         </form>
     </div>
 </div>
+
+<style>
+    .note-editable {
+        text-align: left !important;
+    }
+    .note-editable p {
+        text-align: left !important;
+    }
+</style>
+
 <script>
     let detailIndex = {{ $news->details->count() }};
 
@@ -103,12 +113,12 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label fw-semibold">Detail Title</label>
+            <label class="form-label fw-semibold text-start d-block">Detail Title</label>
             <input type="text" name="details[${detailIndex}][title]" class="form-control">
         </div>
 
         <div class="mb-3">
-            <label class="form-label fw-semibold">Description</label>
+            <label class="form-label fw-semibold text-start d-block">Description</label>
             <textarea name="details[${detailIndex}][description]" class="form-control summernote"></textarea>
         </div>
 
