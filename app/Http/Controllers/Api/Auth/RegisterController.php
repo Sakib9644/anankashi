@@ -87,7 +87,7 @@ class RegisterController extends Controller
         } catch (ValidationException $e) {
             DB::rollBack();
 
-            return Helper::jsonErrorResponse($e->errors(), 422);
+            return Helper::jsonErrorResponse($e->errors(), 422, $e->getMessage());
         } catch (Throwable $e) {
             DB::rollBack();
 
