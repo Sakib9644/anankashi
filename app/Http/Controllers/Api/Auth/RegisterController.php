@@ -38,6 +38,7 @@ class RegisterController extends Controller
     try {
         // Ensure 'is_terms' is cast to boolean, even if sent as string
 
+
         // Validate input
         $validatedData = $request->validate([
             'email'      => 'required|email|unique:users,email',
@@ -46,6 +47,10 @@ class RegisterController extends Controller
             'last_name'  => 'required|string',
             'is_terms'   => 'required|accepted'
         ]);
+
+
+
+
         // Generate verification token
         $verificationToken = Str::random(64);
 
@@ -85,8 +90,7 @@ class RegisterController extends Controller
         return response()->json([
             'status'  => false,
             'code'    => 500,
-            'message' => $e->errors(),
-
+            'message' => $e->getMessage(),
         ], 500);
     }
 }
@@ -205,12 +209,7 @@ class RegisterController extends Controller
 
             return Helper::jsonResponse(true, 'A new verification link has been sent to your email.', 200);
         } catch (Exception $e) {
-              return response()->json([
-            'status'  => false,
-            'code'    => 500,
-            'message' => $e->errors(),
-
-        ], 500);
+            return Helper::jsonErrorResponse($e->getMessage(), 200);
         }
     }
 }
