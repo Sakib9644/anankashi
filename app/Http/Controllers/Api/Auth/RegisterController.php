@@ -16,8 +16,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Notifications\RegistrationNotification;
 use Illuminate\Support\Facades\DB;
 use App\Traits\SMS;
-use Google\ApiCore\ValidationException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Str;
 use Throwable;
 
@@ -32,13 +32,15 @@ class RegisterController extends Controller
         parent::__construct();
         $this->select = ['id', 'name', 'email', 'otp', 'avatar', 'otp_verified_at', 'last_activity_at'];
     }
-
     public function register(Request $request)
     {
         DB::beginTransaction();
 
         try {
+            // Ensure 'is_terms' is cast to boolean, even if sent as string
 
+
+            // Validate input
             $validatedData = $request->validate([
                 'email'      => 'required|email|unique:users,email',
                 'password'   => 'required|string|min:6|confirmed',
@@ -47,28 +49,35 @@ class RegisterController extends Controller
                 'is_terms'   => 'required|accepted'
             ]);
 
+
+
+
+            // Generate verification token
             $verificationToken = Str::random(64);
 
+            // Create user
             $user = User::create([
-                'first_name'         => $validatedData['first_name'],
-                'last_name'          => $validatedData['last_name'],
-                'name'               => $validatedData['first_name'] . ' ' . $validatedData['last_name'],
-                'email'              => $validatedData['email'],
-                'password'           => Hash::make($validatedData['password']),
-                'otp_verified_at'    => null,
-                'verification_token' => $verificationToken,
-                'slug'               => Str::random(8),
-                'is_terms'           => $validatedData['is_terms'] ? 1 : 0
+                'first_name'          => $validatedData['first_name'],
+                'last_name'           => $validatedData['last_name'],
+                'name'                => $validatedData['first_name'] . ' ' . $validatedData['last_name'],
+                'email'               => $validatedData['email'],
+                'password'            => Hash::make($validatedData['password']),
+                'otp_verified_at'     => null,
+                'verification_token'  => $verificationToken,
+                'slug'                => Str::random(8),
+                'is_terms'            => $validatedData['is_terms'] ? 'safe' : 'unsafe', // ✅ now safe
             ]);
 
+            // Create verification URL
             $verificationUrl = route('verify.email', [
                 'token' => $user->verification_token
             ]);
 
+            // Send verification email
             Mail::to($user->email)
                 ->send(new UserVerificationMail($user, $verificationUrl));
 
-            DB::commit();
+            DB::commit(); // Commit transaction
 
             return response()->json([
                 'status'  => true,
@@ -76,20 +85,54 @@ class RegisterController extends Controller
                 'message' => 'Registration successful. Please check your email.',
             ], 200);
         } catch (ValidationException $e) {
-
             DB::rollBack();
 
-            // ✅ RETURNS ALL EXACT VALIDATION ERRORS
             return Helper::jsonErrorResponse($e->errors(), 422);
-        } catch (\Throwable $e) {
-
-
+        } catch (Throwable $e) {
             DB::rollBack();
 
-            return Helper::jsonErrorResponse($e->errors(), 500);
+            return Helper::jsonErrorResponse(
+                config('app.debug') ? $e->getMessage() : 'Internal server error',
+                500
+            );
         }
     }
 
+
+    // public function VerifyEmail(Request $request)
+    // {
+    //     $request->validate([
+    //         'email' => 'required|email|exists:users,email',
+    //         'otp'   => 'required|digits:4',
+    //     ]);
+    //     try {
+    //         $user = User::where('email', $request->input('email'))->first();
+
+    //         //! Check if email has already been verified
+    //         if (!empty($user->otp_verified_at)) {
+    //             return  Helper::jsonErrorResponse('Email already verified.', 409);
+    //         }
+
+    //         if ((string)$user->otp !== (string)$request->input('otp')) {
+    //             return Helper::jsonErrorResponse('Invalid OTP code', 422);
+    //         }
+
+    //         //* Check if OTP has expired
+    //         if (Carbon::parse($user->otp_expires_at)->isPast()) {
+    //             return Helper::jsonErrorResponse('OTP has expired. Please request a new OTP.', 422);
+    //         }
+
+    //         //* Verify the email
+    //         $user->otp_verified_at   = now();
+    //         $user->otp               = null;
+    //         $user->otp_expires_at    = null;
+    //         $user->save();
+
+    //         return Helper::jsonResponse(true, 'Email verification successful.', 200);
+    //     } catch (Exception $e) {
+    //         return Helper::jsonErrorResponse($e->getMessage(), $e->getCode());
+    //     }
+    // }
 
     public function verifyEmail(Request $rquest)
     {
