@@ -281,20 +281,31 @@ class NewsController extends Controller
     }
 
 
-    public function comments(Request $request)
-    {
-        $comments = Comment::with(['user', 'replies'])->where('news_id', $request->news_id)->get();
+  public function comments(Request $request)
+{
+    $page    = $request->input('current_page', 1);
+    $perPage = $request->input('per_page', 10);
+    $newsId  = $request->input('news_id');
 
-       return response()->json([
-    'status' => true,
-    'message' => 'Comments fetched successfully',
-    'data' => $comments->map(function ($comment) {
+    if (!$newsId) {
+        return response()->json([
+            'status' => false,
+            'message' => 'News ID is required',
+        ], 400);
+    }
+
+    // Fetch paginated comments with user and replies
+    $comments = Comment::with(['user', 'replies.user'])
+        ->where('news_id', $newsId)
+        ->orderBy('created_at', 'desc')
+        ->paginate($perPage, ['*'], 'page', $page);
+
+    // Transform comments
+    $data = $comments->getCollection()->map(function ($comment) {
         return [
             'id' => $comment->id,
             'user_id' => $comment->user_id,
-            'avatar' => $comment->user?->avatar
-                ? url($comment->user->avatar)
-                : null,
+            'avatar' => $comment->user?->avatar ? url($comment->user->avatar) : null,
             'name' => $comment->user?->name,
             'comment' => $comment->comment,
             'commented_at' => $comment->created_at->diffForHumans(),
@@ -303,17 +314,28 @@ class NewsController extends Controller
                 return [
                     'id' => $reply->id,
                     'user_id' => $reply->user_id,
-                    'avatar' => $reply->user?->avatar
-                        ? url($reply->user->avatar)
-                        : null,
+                    'avatar' => $reply->user?->avatar ? url($reply->user->avatar) : null,
                     'name' => $reply->user?->name,
                     'reply' => $reply->comment,
                     'commented_at' => $reply->created_at->diffForHumans(),
                 ];
             })->values(),
         ];
-    }),
-]);
+    });
+    // Replace collection with transformed data
 
-    }
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Comments fetched successfully',
+        'data' => $data , // actual comment data
+        'pagination' => [
+            'total_page'   => $comments->lastPage(),
+            'per_page'     => $comments->perPage(),
+            'total_item'   => $comments->total(),
+            'current_page' => $comments->currentPage(),
+        ],
+    ]);
+}
+
 }
