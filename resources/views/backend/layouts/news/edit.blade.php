@@ -24,7 +24,8 @@
 
             <!-- Short Description -->
             <div class="mb-3">
-                <label for="short_description" class="form-label fw-semibold text-start d-block">Short Description</label>
+                <label for="short_description" class="form-label fw-semibold text-start d-block">Short
+                    Description</label>
                 <textarea id="short_description" class="form-control summernote" name="short_description">{{ old('short_description', $news->short_description) }}</textarea>
             </div>
 
@@ -42,8 +43,21 @@
 
             <div id="news-details-wrapper">
                 <div class="text-end mb-3">
-                    <button type="button" class="btn btn-secondary" id="add-detail">Add News Detail</button>
+                    <button type="button" class="btn" id="add-detail"
+                        style="
+        background: linear-gradient(90deg, #4e73df, #1cc88a);
+        color: #fff;
+        font-weight: 600;
+        border-radius: 6px;
+        padding: 0.5rem 1.2rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        transition: all 0.2s ease;
+    ">
+                        <i class="fa-solid fa-plus me-2"></i> Add News Detail
+                    </button>
                 </div>
+
+
 
                 @foreach ($news->details as $index => $detail)
                     <div class="news-detail-row border p-3 mb-3 position-relative">
@@ -73,7 +87,8 @@
                             <label class="form-label fw-semibold text-start d-block">Add Images</label>
                             <div class="images-wrapper">
                                 <div class="input-group mb-2">
-                                    <input type="file" name="details[{{ $index }}][images][]" class="form-control">
+                                    <input type="file" name="details[{{ $index }}][images][]"
+                                        class="form-control">
                                     <button type="button" class="btn btn-success add-image">+</button>
                                 </div>
                             </div>

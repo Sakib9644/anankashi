@@ -58,10 +58,20 @@
                             {{-- News Details --}}
                             <div id="news-details-wrapper">
 
-                               <div class="text-end">
-                                 <button type="button" class="btn btn-secondary mb-3" id="add-detail">Add News
-                                    Detail</button>
-                               </div>
+                                <div class="text-end mb-3">
+                                    <button type="button" class="btn" id="add-detail"
+                                        style="
+        background: linear-gradient(90deg, #4e73df, #1cc88a);
+        color: #fff;
+        font-weight: 600;
+        border-radius: 6px;
+        padding: 0.5rem 1.2rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        transition: all 0.2s ease;
+    ">
+                                        <i class="fa-solid fa-plus me-2"></i> Add News Detail
+                                    </button>
+                                </div>
                                 <div class="news-detail-row border p-3 mb-3">
                                     <div class="d-flex justify-content-between mb-2">
                                         <h6>Detail</h6>
