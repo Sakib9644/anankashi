@@ -148,7 +148,8 @@ Route::prefix('prayer-times')->group(function () {
 Route::prefix('news')->middleware('auth:api')->group(function () {
     Route::get('/', [NewsController::class, 'news']);
     Route::get('/details', [NewsController::class, 'news_details']);
-    Route::post('/comment', [NewsController::class, 'addComment']);
+    Route::post('/add-comment', [NewsController::class, 'addComment']);
+    Route::get('/comments', [NewsController::class, 'comments']);
     Route::post('/reaction', [NewsController::class, 'reaction']);
 
 });

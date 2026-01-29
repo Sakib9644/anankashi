@@ -279,4 +279,38 @@ class NewsController extends Controller
             );
         }
     }
+
+
+    public function comments(Request $request)
+    {
+        $comments = Comment::with(['user', 'replies'])->where('news_id', $request->news_id)->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Comments fetched successfully',
+            'data' => $comments->where('parent_id', null)->map(function ($comment) {
+                return [
+
+                    'id' => $comment->id,
+                    'user_id' => $comment->user_id,
+                    'avatar' => $comment->user->avatar ? url($comment->user->avatar) : 'null',
+
+                    'name' => $comment->user->name,
+                    'comment' => $comment->comment,
+                    'commented_at' => $comment->created_at->diffForHumans(),
+                    'replies' => $comment->replies->map(function ($reply) {
+                        return [
+                            'id' => $reply->id,
+                            'user_id' => $reply->user_id,
+                            'avatar' => $reply->user->avatar ? url($reply->user->avatar) : 'null',
+                            'name' => $reply->user->name,
+                            'reply' => $reply->comment,
+                            'commented_at' => $reply->created_at->diffForHumans(),
+                        ];
+                    })
+
+                ];
+            })
+        ]);
+    }
 }
