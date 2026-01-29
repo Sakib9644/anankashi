@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
+use App\Models\Dislike;
 use App\Models\Like;
 use App\Models\News;
 use Google\Cloud\Storage\Connection\Rest;
@@ -119,34 +120,35 @@ class NewsController extends Controller
                 }),
                 'total_comments' => $news->comments->count(),
                 'total_likes' => $news->likes->count(),
-                'comments' => $news->comments->whereNull('parent_id')->values()->map(function ($comment) {
+                'total_dislike' => $news->dislikes->count(),
+                // 'comments' => $news->comments->whereNull('parent_id')->values()->map(function ($comment) {
 
-                    return [
+                //     return [
 
-                        'id' => $comment->id,
-                        'comment' => $comment->comment,
-                        'user' => $comment->user ? [
-                            'name' => $comment->user->name,
-                            'avatar' => $comment->user->avatar ? asset($comment->user->avatar) : null,
-                            'commented_at' => $comment->created_at->diffForHumans(),
-                        ] : null,
-                        'replies' => $comment->replies->map(function ($reply) {
-                            return [
-                                'id' => $reply->id,
-                                'comment' => $reply->comment,
-                                'user' => $reply->user ? [
-                                    'name' => $reply->user->name,
-                                    'avatar' => $reply->user->avatar ? asset($reply->user->avatar) : null,
-                                    'commented_at' => $reply->created_at->diffForHumans(),
-                                ] : null,
-                            ];
-                        })
-
-
+                //         'id' => $comment->id,
+                //         'comment' => $comment->comment,
+                //         'user' => $comment->user ? [
+                //             'name' => $comment->user->name,
+                //             'avatar' => $comment->user->avatar ? asset($comment->user->avatar) : null,
+                //             'commented_at' => $comment->created_at->diffForHumans(),
+                //         ] : null,
+                //         'replies' => $comment->replies->map(function ($reply) {
+                //             return [
+                //                 'id' => $reply->id,
+                //                 'comment' => $reply->comment,
+                //                 'user' => $reply->user ? [
+                //                     'name' => $reply->user->name,
+                //                     'avatar' => $reply->user->avatar ? asset($reply->user->avatar) : null,
+                //                     'commented_at' => $reply->created_at->diffForHumans(),
+                //                 ] : null,
+                //             ];
+                //         })
 
 
-                    ];
-                }),
+
+
+                //     ];
+                // }),
             ];
 
             return response()->json([
@@ -204,42 +206,71 @@ class NewsController extends Controller
         }
     }
 
-    public function toggleLike(Request $request)
+    public function reaction(Request $request)
     {
         try {
             $request->validate([
                 'news_id' => 'required|exists:news,id',
+                'action'  => 'required|in:like,dislike',
             ]);
 
             $userId = auth('api')->id();
+            $newsId = $request->news_id;
 
-            $like = Like::where('news_id', $request->news_id)
-                ->where('user_id', $userId)
-                ->first();
+            if ($request->action === 'like') {
 
-            if ($like) {
-                $like->delete();
-                $liked = false;
-            } else {
-                Like::create([
-                    'news_id' => $request->news_id,
-                    'user_id' => $userId
-                ]);
-                $liked = true;
+                // Remove dislike first
+                Dislike::where('user_id', $userId)
+                    ->where('news_id', $newsId)
+                    ->delete();
+
+                $like = Like::where('user_id', $userId)
+                    ->where('news_id', $newsId)
+                    ->first();
+
+                if ($like) {
+                    $like->delete();
+                    $status = 'unliked';
+                } else {
+                    Like::create([
+                        'news_id' => $newsId,
+                        'user_id' => $userId,
+                    ]);
+                    $status = 'liked';
+                }
+            }
+
+            if ($request->action === 'dislike') {
+
+                // Remove like first
+                Like::where('user_id', $userId)
+                    ->where('news_id', $newsId)
+                    ->delete();
+
+                $dislike = Dislike::where('user_id', $userId)
+                    ->where('news_id', $newsId)
+                    ->first();
+
+                if ($dislike) {
+                    $dislike->delete();
+                    $status = 'undisliked';
+                } else {
+                    Dislike::create([
+                        'news_id' => $newsId,
+                        'user_id' => $userId,
+                    ]);
+                    $status = 'disliked';
+                }
             }
 
             return response()->json([
                 'status' => true,
-                'code' => 200,
-                'message' => $liked ? 'News liked successfully' : 'News unliked successfully',
+                'code'   => 200,
+
             ]);
         } catch (ValidationException $e) {
-            DB::rollBack();
-
             return Helper::jsonErrorResponse($e->errors(), 422, $e->getMessage());
         } catch (Throwable $e) {
-            DB::rollBack();
-
             return Helper::jsonErrorResponse(
                 config('app.debug') ? $e->getMessage() : 'Internal server error',
                 500

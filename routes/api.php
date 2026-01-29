@@ -145,11 +145,11 @@ Route::prefix('prayer-times')->group(function () {
     Route::get('/today', [PrayerTimesController::class, 'today']);
     Route::get('/methods', [PrayerTimesController::class, 'methods']);
 });
-Route::prefix('news')->group(function () {
+Route::prefix('news')->middleware('auth:api')->group(function () {
     Route::get('/', [NewsController::class, 'news']);
     Route::get('/details', [NewsController::class, 'news_details']);
     Route::post('/comment', [NewsController::class, 'addComment']);
-    Route::post('/like', [NewsController::class, 'toggleLike']);
+    Route::post('/reaction', [NewsController::class, 'reaction']);
 
 });
 
