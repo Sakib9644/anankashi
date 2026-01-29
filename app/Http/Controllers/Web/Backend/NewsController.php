@@ -143,7 +143,8 @@ class NewsController extends Controller
             return redirect()->route('admin.news.index')->with('t-success', 'News, details, and images created successfully');
         } catch (ValidationException $e) {
             DB::rollBack();
-            return redirect()->back()->withInput()->with('t-error', 'Something went wrong: ' . $e->getMessage());
+
+            return redirect()->back()->withInput()->with('t-error', 'Something went wrong: ' . $e->errors());
         }
     }
 
