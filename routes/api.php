@@ -20,7 +20,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Frontend\SettingsController;
 use App\Http\Controllers\Api\Frontend\SocialLinksController;
 use App\Http\Controllers\Api\Frontend\SubscriberController;
-use App\Http\Controllers\api\NewsController;
+use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\PrayerTimesController;
 use Illuminate\Support\Facades\Route;
 
