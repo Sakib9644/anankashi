@@ -27,7 +27,7 @@ class NewsController extends Controller
                 ->editColumn('thumbnail', fn($row) => '<img src="' . asset($row->thumbnail) . '" width="60">')
 
                 ->addColumn('status', function ($data) {
-                   $isPublish = $data->status === 'publish';
+                    $isPublish = $data->status === 'publish';
 
                     $backgroundColor = $isPublish ? '#4CAF50' : '#ccc';
                     $sliderTranslateX = $isPublish ? '26px' : '2px';
@@ -144,7 +144,11 @@ class NewsController extends Controller
         } catch (ValidationException $e) {
             DB::rollBack();
 
-            return redirect()->back()->withInput()->with('t-error', 'Something went wrong: ' . $e->errors());
+            $errors = implode(', ', array_map(function ($messages) {
+                return implode(', ', $messages);
+            }, $e->errors()));
+
+            return redirect()->back()->withInput()->with('t-error', 'Something went wrong: ' . $errors);
         }
     }
 
