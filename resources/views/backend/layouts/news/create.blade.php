@@ -33,23 +33,23 @@
                       <div class="d-flex justify-content-between ">
                           <div class="mb-3 col-md-6">
                             <label for="news_title">News Title</label>
-                            <input type="text" class="form-control" name="news_title" id="news_title">
+                            <input type="text" class="form-control" name="news_title" id="news_title" required>
                         </div>
 
                         <div class="mb-3 col-md-6">
                             <label for="type">Type</label>
-                            <input type="text" class="form-control" name="type" id="type">
+                            <input type="text" class="form-control" name="type" id="type" required>
                         </div>
                       </div>
 
                         <div class="mb-3">
                             <label for="short_description">Short Description</label>
-                            <textarea class="form-control summernote" name="short_description"></textarea>
+                            <textarea class="form-control summernote" name="short_description" required></textarea>
                         </div>
 
                         <div class="mb-3">
                             <label for="thumbnail">Thumbnail</label>
-                            <input type="file" class="form-control" name="thumbnail">
+                            <input type="file" class="form-control" name="thumbnail" required>
                         </div>
 
 
@@ -65,19 +65,19 @@
 
                                 <div class="mb-3">
                                     <label>Detail Title</label>
-                                    <input type="text" name="details[0][title]" class="form-control">
+                                    <input type="text" name="details[0][title]" class="form-control" required>
                                 </div>
 
                                 <div class="mb-3">
                                     <label>Description</label>
-                                    <textarea name="details[0][description]" class="form-control summernote"></textarea>
+                                    <textarea name="details[0][description]" class="form-control summernote" required></textarea>
                                 </div>
 
                                 <div class="images-wrapper">
                                     <div class="mb-3 image-row">
                                         <label>Image</label>
                                         <div class="input-group mb-2">
-                                            <input type="file" name="details[0][images][]" class="form-control">
+                                            <input type="file" name="details[0][images][]" class="form-control" required>
                                             <button type="button" class="btn btn-success add-image">+</button>
                                         </div>
                                     </div>
@@ -118,19 +118,19 @@ $('#add-detail').click(function() {
 
         <div class="mb-3">
             <label>Detail Title</label>
-            <input type="text" name="details[${detailIndex}][title]" class="form-control">
+            <input type="text" name="details[${detailIndex}][title]" class="form-control" required>
         </div>
 
         <div class="mb-3">
             <label>Description</label>
-            <textarea name="details[${detailIndex}][description]" class="form-control"></textarea>
+            <textarea name="details[${detailIndex}][description]" class="form-control" required></textarea>
         </div>
 
         <div class="images-wrapper">
             <div class="mb-3 image-row">
                 <label>Image</label>
                 <div class="input-group mb-2">
-                    <input type="file" name="details[${detailIndex}][images][]" class="form-control">
+                    <input type="file" name="details[${detailIndex}][images][]" class="form-control" required>
                     <button type="button" class="btn btn-success add-image">+</button>
                 </div>
             </div>
