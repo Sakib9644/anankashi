@@ -18,57 +18,67 @@ class NewsController extends Controller
 {
     //
     public function news(Request $request)
-{
+    {
+        try {
+            // 1️⃣ Validate inputs
+            $request->validate([
+                'current_page' => 'sometimes|integer|min:1',
+                'per_page'     => 'sometimes|integer|min:1|max:100',
+                'title'        => 'sometimes|string',
+                'type'         => 'sometimes|string',
+            ]);
 
-    try {
-        $request->validate([
-            'current_page' => 'sometimes|integer|min:1',
-            'per_page' => 'sometimes|integer|min:1|max:100',
-        ]);
+            $page    = $request->input('current_page', 1);
+            $perPage = $request->input('per_page', 10);
 
-        $page = $request->input('current_page', 1);
-        $perPage = $request->input('per_page', 10);
-        // Paginate news
-        $newsPaginator = News::latest('id')->paginate($perPage, ['*'], 'page', $page);
+            $query = News::query()->latest('id');
 
-        $newsData = $newsPaginator->getCollection()->map(function ($newsItem) {
-            return [
-                'id' => $newsItem->id,
-                'slug' => $newsItem->slug,
-                'title' => $newsItem->title,
-                'description' => Str::limit($newsItem->short_description, 100),
-                'thumbnail' => $newsItem->thumbnail ? asset($newsItem->thumbnail) : null,
-                'date' => $newsItem->created_at->format('l F d Y'),
-            ];
-        });
+            if ($request->filled('title')) {
+                $query->where('title', 'like', '%' . $request->title . '%');
+            }
 
-        // Replace paginator items with mapped data
-        $newsPaginator->setCollection($newsData);
+            if ($request->filled('type')) {
+                $query->where('type', $request->type);
+            }
 
-        // Build response
-        return response()->json([
-            'status' => true,
-            'message' => 'News fetched successfully',
-            'data' => [
-                'newslist' => $newsPaginator->items(), // mapped items
-                'pagination' => [
-                    'total_page' => $newsPaginator->lastPage(),
-                    'per_page' => $newsPaginator->perPage(),
-                    'total_item' => $newsPaginator->total(),
-                    'current_page' => $newsPaginator->currentPage(),
+            $newsPaginator = $query->paginate($perPage, ['*'], 'page', $page);
+
+            $newsData = $newsPaginator->getCollection()->map(function ($news) {
+                return [
+                    'id'          => $news->id,
+                    'type'        => $news->type,
+                    'slug'        => $news->slug,
+                    'title'       => $news->title,
+                    'description' => Str::limit($news->short_description, 100),
+                    'thumbnail'   => $news->thumbnail ? asset($news->thumbnail) : null,
+                    'date'        => $news->created_at->format('l F d Y'),
+                ];
+            });
+
+            $newsPaginator->setCollection($newsData);
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'News fetched successfully',
+                'data'    => [
+                    'newslist' => $newsPaginator->items(),
+                    'pagination' => [
+                        'total_page'   => $newsPaginator->lastPage(),
+                        'per_page'     => $newsPaginator->perPage(),
+                        'total_item'   => $newsPaginator->total(),
+                        'current_page' => $newsPaginator->currentPage(),
+                    ],
                 ],
-            ],
-        ]);
-
-    } catch (ValidationException $e) {
-        return Helper::jsonErrorResponse($e->errors(), 422, $e->getMessage());
-    } catch (Throwable $e) {
-        return Helper::jsonErrorResponse(
-            config('app.debug') ? $e->getMessage() : 'Internal server error',
-            500
-        );
+            ]);
+        } catch (ValidationException $e) {
+            return Helper::jsonErrorResponse($e->errors(), 422, $e->getMessage());
+        } catch (Throwable $e) {
+            return Helper::jsonErrorResponse(
+                config('app.debug') ? $e->getMessage() : 'Internal server error',
+                500
+            );
+        }
     }
-}
 
 
     public function news_details()
