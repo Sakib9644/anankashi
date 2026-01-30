@@ -122,7 +122,7 @@
     }
 </style>
 
-{{-- <script>
+<script>
     let detailIndex = {{ $news->details->count() }};
 
     // Add new detail row
@@ -208,4 +208,4 @@
             height: 120
         });
     });
-</script> --}}
+</script>
