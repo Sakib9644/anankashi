@@ -87,17 +87,17 @@
                                         <textarea name="details[0][description]" class="form-control summernote"></textarea>
                                     </div>
 
-                                    <div class="images-wrapper">
-                                        <div class="mb-3 image-row">
-                                            <label>Image</label>
-                                            <div class="input-group mb-2">
-                                                <input type="file" name="details[0][images][]" class="form-control"
-                                                    required>
+                                       <div class="images-wrapper">
+                                    <label class="form-label mb-2">Images</label>
+                                    <div class="row g-3" data-images-container>
+                                        <div class="col-md-4 col-sm-6 image-row">
+                                            <div class="input-group">
+                                                <input type="file" name="details[0][images][]" class="form-control" accept="image/*" required>
                                                 <button type="button" class="btn btn-success add-image">+</button>
                                             </div>
                                         </div>
                                     </div>
-
+                                </div>
                                 </div>
 
                             </div>
@@ -161,15 +161,27 @@
         });
 
         // Add new image input inside a detail
-        $(document).on('click', '.add-image', function() {
-            let inputGroup = `
-        <div class="input-group mb-2">
-            <input type="file" name="${$(this).prev('input').attr('name')}" class="form-control">
-            <button type="button" class="btn btn-danger remove-image">-</button>
-        </div>
-    `;
-            $(this).closest('.images-wrapper').append(inputGroup);
-        });
+          $(document).on('click', '.add-image', function () {
+        const $detailRow = $(this).closest('.news-detail-row');
+        const index = $detailRow.data('index') || $('.news-detail-row').index($detailRow);
+
+        const newField = `
+        <div class="col-md-4 col-sm-6 image-row">
+            <div class="input-group">
+                <input type="file" name="details[${index}][images][]" class="form-control" accept="image/*" required>
+                <button type="button" class="btn btn-danger remove-image">−</button>
+            </div>
+        </div>`;
+
+        const $container = $(this).closest('[data-images-container]');
+
+        // Make sure it's inside .row
+        if (!$container.hasClass('row')) {
+            $container.wrap('<div class="row g-3"></div>');
+        }
+
+        $container.append(newField);
+    });
 
         // Remove image input
         $(document).on('click', '.remove-image', function() {
