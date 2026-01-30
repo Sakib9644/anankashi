@@ -60,6 +60,7 @@ class NewsController extends Controller
 
             return response()->json([
                 'status'  => true,
+                'code'    => 200,
                 'message' => 'News fetched successfully',
                 'data'    => [
                     'newslist' => $newsPaginator->items(),
@@ -102,6 +103,7 @@ class NewsController extends Controller
             $readingTime = max(1, ceil($wordCount / 200));
             $newsData = [
                 'id' => $news->id,
+                'is_subscribed' => $news->is_subscribed,
                 'title' => $news->title,
                 'description' => $news->short_description,
                 'date' => $news->created_at->format('F d Y'),
@@ -155,6 +157,7 @@ class NewsController extends Controller
 
             return response()->json([
                 'status' => true,
+                'code' => 200,
                 'message' => 'News fetched successfully',
                 'data' => $newsData
             ]);
@@ -192,6 +195,7 @@ class NewsController extends Controller
 
             return response()->json([
                 'status' => true,
+                'code' => 200,
                 'message' => 'Comment added successfully',
             ]);
         } catch (ValidationException $e) {
@@ -327,6 +331,7 @@ class NewsController extends Controller
 
         return response()->json([
             'status' => true,
+            'code' => 200,
             'message' => 'Comments fetched successfully',
             'data' => $data, // actual comment data
             'pagination' => [
@@ -349,6 +354,7 @@ class NewsController extends Controller
 
         return response()->json([
             'status' => true,
+            'code' => 200,
             'message' => 'News Type fetched successfully',
             'data' => $newsType->map(function ($newsType) {
                 return [
@@ -361,6 +367,21 @@ class NewsController extends Controller
                 'total_item'   => $newsType->total(),
                 'current_page' => $newsType->currentPage(),
             ], // actual comment data
+        ]);
+    }
+
+
+    public function subscribe(Request $request)
+    {
+        $user = auth('api')->user();
+        $user->is_subscribed = ! $user->is_subscribed;
+
+        $user->save();
+        // dd($user->is_subscribed);
+        return response()->json([
+            'status' => true,
+            'code' => 200,
+            'message' => $user->is_subscribed ? 'Subscribed' : 'Unsubscribed',
         ]);
     }
 }

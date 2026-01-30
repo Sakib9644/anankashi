@@ -78,6 +78,7 @@ class DashboardController extends Controller
     $totalDecrement = \App\Models\Transaction::where('status', 'success')->where('type', 'decrement')->sum('amount');
 
     session()->forget('t-success');
+    cache()->forget('t-success');
 
     return view('backend.layouts.dashboard', compact(
         'userAnalytics',
