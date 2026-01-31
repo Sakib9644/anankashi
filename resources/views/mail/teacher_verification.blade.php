@@ -9,7 +9,7 @@
                     <!-- Header -->
                     <tr>
                         <td align="center" style="padding:32px 25px 24px; background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);">
-                            <img src="{{ $message->embed(public_path('default/logo.png')) }}" alt="{{ config('app.name') }}"
+                            <img src="{{ asset(settings('favicon') ?? 'default/logo.svg') }}"  alt="{{ config('app.name') }}"
                                 style="display:block; max-width:120px; height:auto; margin:0 auto;">
                             <div style="height:4px; width:60px; background-color:#4a90e2; margin:20px auto 0;"></div>
                         </td>
