@@ -32,7 +32,7 @@ class PageController extends Controller
             ->first();
 
         if ($page) {
-            return Helper::jsonResponse(true, 'Page found', 200, ['page' => $page]);
+            return Helper::jsonResponse(true, 'Page found', 200, $page);
         }
 
         return Helper::jsonResponse(false, 'Page not found', 404);
