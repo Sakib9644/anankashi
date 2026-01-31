@@ -32,6 +32,7 @@
 
                             <!-- Button -->
                             <table width="100%" cellspacing="0" cellpadding="0" style="margin:32px 0 40px;">
+                                @dd($verificationUrl);
                                 <tr>
                                     <td align="center">
                                         <a href="{{ $verificationUrl }}"
