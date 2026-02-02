@@ -6,6 +6,7 @@ use App\Helpers\Helper;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -70,10 +71,12 @@ class LoginController extends Controller
 
             $data = User::select($this->select)->find(auth('api')->user()->id);
 
+
             return response()->json([
                 'status'     => true,
                 'message'    => 'Login successful',
                 'code'       => 200,
+                'expires_in' => auth('api')->factory()->getTTL(),
                 'token'      => $token,
                 'data'       => $data,
             ], 200);
