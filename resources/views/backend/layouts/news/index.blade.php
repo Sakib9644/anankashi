@@ -163,7 +163,7 @@ function statusChange(id) {
     $.get(url.replace(':id', id), function (resp) {
         NProgress.done();
         toastr.success(resp.message);
-        $('#datatable').DataTable().ajax.reload();
+        $('#datatable').DataTable().ajax.reload(null, false);
     });
 }
 
@@ -192,7 +192,7 @@ function deleteItem(id) {
         success: function (resp) {
             NProgress.done();
             toastr.success(resp.message);
-            $('#datatable').DataTable().ajax.reload();
+        $('#datatable').DataTable().ajax.reload(null, false);
         }
     });
 }
