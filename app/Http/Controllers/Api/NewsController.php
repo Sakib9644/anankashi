@@ -32,7 +32,7 @@ class NewsController extends Controller
             $page    = $request->input('current_page', 1);
             $perPage = $request->input('per_page', 10);
 
-            $query = News::query()->latest('id');
+            $query = News::where('status', 'publish')->latest('id');
 
             if ($request->filled('title')) {
                 $query->where('title', 'like', '%' . $request->title . '%');
