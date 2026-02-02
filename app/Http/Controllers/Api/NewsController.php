@@ -384,4 +384,39 @@ class NewsController extends Controller
             'message' => $user->is_subscribed ? 'Subscribed' : 'Unsubscribed',
         ]);
     }
+
+
+    public function most_popular(Request $request)
+    {
+        $page    = $request->input('current_page', 1);
+        $perPage = $request->input('per_page', 10);
+
+        $news = News::withCount('likes')
+            ->orderBy('likes_count', 'desc')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json([
+            'status' => true,
+            'code' => 200,
+            'message' => 'News Type fetched successfully',
+            'data' => $news->map(function ($newsType) {
+                return [
+                    'id'          => $newsType->id,
+                    'likes_count' => $newsType->likes_count,
+                    'type'        => $newsType->type,
+                    'slug'        => $newsType->slug,
+                    'title'       => $newsType->title,
+                    'description' => Str::limit($newsType->short_description, 100),
+                    'thumbnail'   => $newsType->thumbnail ? asset($newsType->thumbnail) : null,
+                    'date'        => $newsType->created_at->format('l F d Y'),
+                ];
+            }),
+            'pagination' => [
+                'total_page'   => $news->lastPage(),
+                'per_page'     => $news->perPage(),
+                'total_item'   => $news->total(),
+                'current_page' => $news->currentPage(),
+            ],
+        ]);
+    }
 }

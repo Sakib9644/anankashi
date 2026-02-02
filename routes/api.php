@@ -155,6 +155,7 @@ Route::prefix('news')->middleware('auth:api')->group(function () {
     Route::get('/type', [NewsController::class, 'news_type']);
     Route::post('/reaction', [NewsController::class, 'reaction']);
     Route::post('/subscribe', [NewsController::class, 'subscribe']);
+    Route::get('/most-popular', [NewsController::class, 'most_popular']);
 
 });
 
