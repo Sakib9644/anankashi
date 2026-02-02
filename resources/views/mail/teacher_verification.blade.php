@@ -52,9 +52,6 @@
                                     </td>
                                 </tr>
                             </table>
-
-                            <!-- Support Info -->
-
                         </td>
                     </tr>
 

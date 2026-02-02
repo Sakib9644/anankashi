@@ -107,10 +107,19 @@ class Helper
         }
        }
        else{
-            $arryerrors[] = [
-                'field'   => 'error',
-                'message' => $message,
-            ];
+
+
+       if($code == 401){
+        $errors ='Your session has expired. Please sign in again.';
+       }elseif($code == 403){
+        $errors = 'Forbidden';
+       }elseif($code == 404){
+        $errors = 'Not Found';
+       }elseif($code == 500){
+        $errors = 'Internal Server Error';
+       }
+
+
        }
 
         $response = [

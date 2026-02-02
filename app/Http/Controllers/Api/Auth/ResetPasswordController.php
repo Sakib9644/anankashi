@@ -50,7 +50,7 @@ class ResetPasswordController extends Controller
         } catch (ValidationException $e) {
             DB::rollBack();
 
-            return Helper::jsonErrorResponse($e->errors(), 422,$e->getMessage());
+            return Helper::jsonErrorResponse($e->errors(), 422, $e->getMessage());
         } catch (Throwable $e) {
             DB::rollBack();
 
@@ -102,7 +102,7 @@ class ResetPasswordController extends Controller
         } catch (ValidationException $e) {
             DB::rollBack();
 
-            return Helper::jsonErrorResponse($e->errors(), 422,$e->getMessage());
+            return Helper::jsonErrorResponse($e->errors(), 422, $e->getMessage());
         } catch (Throwable $e) {
             DB::rollBack();
 
@@ -144,7 +144,7 @@ class ResetPasswordController extends Controller
         } catch (ValidationException $e) {
             DB::rollBack();
 
-            return Helper::jsonErrorResponse($e->errors(), 422,$e->getMessage());
+            return Helper::jsonErrorResponse($e->errors(), 422, $e->getMessage());
         } catch (Throwable $e) {
             DB::rollBack();
 
@@ -161,9 +161,9 @@ class ResetPasswordController extends Controller
     {
         try {
             $request->validate([
+                'current_password' => ['required', 'string', 'current_password'],
                 'password' => 'required|string|min:6|confirmed',
             ]);
-
             $user = auth('api')->user();
             $user->password = Hash::make($request->password);
             $user->save();
