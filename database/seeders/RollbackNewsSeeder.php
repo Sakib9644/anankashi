@@ -21,7 +21,7 @@ class RollbackNewsSeeder extends Seeder
         DB::table('news')
             ->where('id', $news->id)
             ->update([
-                'thumbnail' => 'photo_2026-01-14_15-57-46'
+                'thumbnail' => 'uploads/news/photo_2026-01-28_18-23-14.jpg'
             ]);
 
         $newsDetails = DB::table('news_details')
@@ -31,7 +31,7 @@ class RollbackNewsSeeder extends Seeder
         foreach ($newsDetails as $detail) {
             DB::table('news_details_images')
                 ->insert([
-                    'image' => 'photo_2026-01-14_15-57-46','news_details_id' => $detail->id,'created_at' => now(), 'updated_at' => now()
+                    'image' => 'uploads/news/photo_2026-01-28_18-23-14.jpg','news_details_id' => $detail->id,'created_at' => now(), 'updated_at' => now()
                 ]);
         }
     }
