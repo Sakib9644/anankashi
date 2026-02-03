@@ -18,7 +18,7 @@ class RollbackNewsSeeder extends Seeder
         $newsItems = DB::table('news')->get();
 
         foreach ($newsItems as $news) {
-            // Update the news thumbnail
+            
             DB::table('news')
                 ->where('id', $news->id)
                 ->update([
@@ -27,36 +27,33 @@ class RollbackNewsSeeder extends Seeder
 
             $users = DB::table('users')->get();
 
-            foreach ($users->slice(5, 5) as $user) {
-                DB::table('likes')
-                    ->insert([
-                        'user_id' => $user->id,
-                        'news_id' => $news->id,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-            }
-            foreach ($users->slice(0, 5) as $user) {
-                DB::table('news_dislikes')
-                    ->insert([
-                        'user_id' => $user->id,
-                        'news_id' => $news->id,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-            }
+            $users->random(rand(1,$users->count()))->each(function ($user) use ($news) {
+                DB::table('likes')->insert([
+                    'user_id'    => $user->id,
+                    'news_id'    => $news->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            });
 
-            foreach ($users as $user) {
-                DB::table('comments')
-                    ->insert([
-                        'user_id' => $user->id,
-                        'news_id' => $news->id,
-                        'comment' => Str::random(10),
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-            }
+            $users->random(rand(1,$users->count()))->each(function ($user) use ($news) {
+                DB::table('news_dislikes')->insert([
+                    'user_id'    => $user->id,
+                    'news_id'    => $news->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            });
 
+            $users->random(rand(1,$users->count()))->each(function ($user) use ($news) {
+                DB::table('comments')->insert([
+                    'user_id'    => $user->id,
+                    'news_id'    => $news->id,
+                    'comment'    => fake()->paragraph(rand(1, 3)),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            });
 
             $newsDetails = DB::table('news_details')
                 ->where('news_id', $news->id)
