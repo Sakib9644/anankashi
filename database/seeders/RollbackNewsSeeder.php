@@ -27,39 +27,36 @@ class RollbackNewsSeeder extends Seeder
 
             $users = DB::table('users')->get();
 
+            foreach ($users->take(5)->skip(5) as $user) {
+                DB::table('likes')
+                    ->insert([
+                        'user_id' => $user->id,
+                        'news_id' => $news->id,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+            }
+
             foreach ($users as $user) {
-                // Randomly decide if the user likes the news (50% chance)
-                if (rand(0, 1)) {
-                    DB::table('likes')->insert([
-                        'user_id' => $user->id,
-                        'news_id' => $news->id,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-                }
-
-                // Randomly decide if the user dislikes the news (30% chance)
-                if (rand(0, 100) < 30) {
-                    DB::table('news_dislikes')->insert([
-                        'user_id' => $user->id,
-                        'news_id' => $news->id,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-                }
-
-                // Randomly decide if the user comments (70% chance)
-                if (rand(0, 100) < 70) {
-                    DB::table('comments')->insert([
+                DB::table('comments')
+                    ->insert([
                         'user_id' => $user->id,
                         'news_id' => $news->id,
                         'comment' => Str::random(10),
                         'created_at' => now(),
                         'updated_at' => now()
                     ]);
-                }
             }
 
+            foreach ($users->take(5) as $user) {
+                DB::table('news_dislikes')
+                    ->insert([
+                        'user_id' => $user->id,
+                        'news_id' => $news->id,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+            }
 
             $newsDetails = DB::table('news_details')
                 ->where('news_id', $news->id)
