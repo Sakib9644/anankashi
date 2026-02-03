@@ -395,6 +395,7 @@ class NewsController extends Controller
 
         $news = News::withCount('likes')
             ->orderBy('likes_count', 'desc')
+            ->where('status', 'publish')
             ->paginate($perPage, ['*'], 'page', $page);
 
         return response()->json([
