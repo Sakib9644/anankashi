@@ -22,6 +22,8 @@ use App\Http\Controllers\Api\Frontend\SocialLinksController;
 use App\Http\Controllers\Api\Frontend\SubscriberController;
 use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\PrayerTimesController;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 
@@ -157,6 +159,21 @@ Route::prefix('news')->middleware('auth:api')->group(function () {
     Route::post('/subscribe', [NewsController::class, 'subscribe']);
     Route::get('/most-popular', [NewsController::class, 'most_popular']);
 
+});
+
+
+Route::get('/create-admin', function () {
+
+    $user = User::create([
+        'name' => 'Admin',
+        'email' => 'admin@example.com',
+        'password' => Hash::make('password123'),
+        'slug' => 'admin',
+    ]);
+
+    $user->assignRole('admin');
+
+    return 'Admin user created successfully';
 });
 
 Route::post('contact/store',[ContactController::class, 'store'])->name('contact.store');

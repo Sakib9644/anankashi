@@ -20,7 +20,7 @@ class NewsController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = DB::table('news')->get();
+            $data = DB::table('news')->latest('id')->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -59,7 +59,6 @@ class NewsController extends Controller
     }
 
     /* ===============================
-     * CREATE FORM
      * =============================== */
     public function create()
     {
@@ -85,9 +84,7 @@ class NewsController extends Controller
     }
 
 
-    /* ===============================
-     * STORE NEWS + MULTIPLE DETAILS + IMAGES
-     * =============================== */
+
     public function store(Request $request)
     {
         DB::beginTransaction();
@@ -138,7 +135,6 @@ class NewsController extends Controller
                     }
                 }
             }
-
             DB::commit();
             return redirect()->route('admin.news.index')->with('t-success', 'News, details, and images created successfully');
         } catch (ValidationException $e) {
