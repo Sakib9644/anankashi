@@ -32,7 +32,7 @@ class NewsController extends Controller
             $page    = $request->input('current_page', 1);
             $perPage = $request->input('per_page', 10);
 
-            $query = News::where('status', 'publish')->withCount('likes')->withcount('dislikes')->latest('id');
+            $query = News::where('status', 'publish')->withCount('likes')->withcount('dislikes')->withCount('comments')->latest('id');
 
             if ($request->filled('title')) {
                 $query->where('title', 'like', '%' . $request->title . '%');
@@ -52,6 +52,7 @@ class NewsController extends Controller
                     'title'       => $news->title,
                     'likes_count' => $news->likes_count,
                     'dislikes_count' => $news->dislikes_count,
+                    'comments_count' => $news->comments_count,
                     'description' => Str::limit($news->short_description, 100),
                     'thumbnail'   => $news->thumbnail ? asset($news->thumbnail) : null,
                     'date'        => $news->created_at->format('l F d Y'),
