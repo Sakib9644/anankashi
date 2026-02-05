@@ -329,7 +329,6 @@ class NewsController extends Controller
                 })->values(),
             ];
         });
-        // Replace collection with transformed data
 
 
         return response()->json([
