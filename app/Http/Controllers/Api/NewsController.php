@@ -388,38 +388,43 @@ class NewsController extends Controller
     }
 
 
-    public function most_popular(Request $request)
-    {
-        $page    = $request->input('current_page', 1);
-        $perPage = $request->input('per_page', 10);
+   public function most_popular(Request $request)
+{
+    $page    = $request->input('current_page', 1);
+    $perPage = $request->input('per_page', 10);
 
-        $news = News::withCount('likes')
-            ->orderBy('likes_count', 'desc')
-            ->where('status', 'publish')
-            ->paginate($perPage, ['*'], 'page', $page);
+    $newsall = News::withCount(['likes', 'dislikes', 'comments'])
+        ->where('status', 'publish')
+        ->orderBy('likes_count', 'desc')
+        ->paginate($perPage, ['*'], 'page', $page);
 
-        return response()->json([
-            'status' => true,
-            'code' => 200,
-            'message' => 'Most Popular news fetched successfully',
-            'data' => $news->map(function ($newsType) {
+    return response()->json([
+        'status'  => true,
+        'code'    => 200,
+        'message' => 'Most popular news fetched successfully',
+        'data'    => [
+            'newslist' => $newsall->map(function ($news) {
                 return [
-                    'id'          => $newsType->id,
-                    'likes_count' => $newsType->likes_count,
-                    'type'        => $newsType->type,
-                    'slug'        => $newsType->slug,
-                    'title'       => $newsType->title,
-                    'description' => Str::limit($newsType->short_description, 100),
-                    'thumbnail'   => $newsType->thumbnail ? asset($newsType->thumbnail) : null,
-                    'date'        => $newsType->created_at->format('l F d Y'),
+                    'id'               => $news->id,
+                    'likes_count'      => $news->likes_count,
+                    'dislikes_count'   => $news->dislikes_count,
+                    'comments_count'   => $news->comments_count,
+                    'type'             => $news->type,
+                    'slug'             => $news->slug,
+                    'title'            => $news->title,
+                    'description'      => Str::limit($news->short_description, 100),
+                    'thumbnail'        => $news->thumbnail ? asset($news->thumbnail) : null,
+                    'date'             => $news->created_at->format('l F d Y'),
                 ];
             }),
             'pagination' => [
-                'total_page'   => $news->lastPage(),
-                'per_page'     => $news->perPage(),
-                'total_item'   => $news->total(),
-                'current_page' => $news->currentPage(),
+                'total_page'   => $newsall->lastPage(),
+                'per_page'     => $newsall->perPage(),
+                'total_item'   => $newsall->total(),
+                'current_page' => $newsall->currentPage(),
             ],
-        ]);
-    }
+        ]
+    ]);
+}
+
 }

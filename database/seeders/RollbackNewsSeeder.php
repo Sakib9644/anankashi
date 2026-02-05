@@ -54,7 +54,7 @@ class RollbackNewsSeeder extends Seeder
                     'updated_at' => now(),
                 ]);
             });
-            
+
 
             $newsDetails = DB::table('news_details')
                 ->where('news_id', $news->id)
