@@ -353,7 +353,7 @@ class NewsController extends Controller
         $page    = $request->input('current_page', 1);
         $perPage = $request->input('per_page', 10);
 
-        $newsType = News::select('type')->distinct()->paginate($perPage, ['*'], 'page', $page);
+        $newsType = News::select('type')->where('status', 'publish')->distinct()->paginate($perPage, ['*'], 'page', $page);
 
         return response()->json([
             'status' => true,
