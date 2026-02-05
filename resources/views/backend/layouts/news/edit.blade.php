@@ -23,7 +23,7 @@
             <!-- Short Description -->
             <div class="mb-3">
                 <label for="short_description" class="form-label fw-semibold d-block">Short Description</label>
-                <textarea id="short_description" class="form-control summernote" name="short_description">{{ old('short_description', $news->short_description) }}</textarea>
+                <textarea id="short_description" class="form-control " name="short_description">{{ old('short_description', $news->short_description) }}</textarea>
             </div>
 
             <!-- Thumbnail -->

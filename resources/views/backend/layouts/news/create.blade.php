@@ -45,7 +45,7 @@
 
                             <div class="mb-3">
                                 <label for="short_description">Short Description</label>
-                                <textarea class="form-control summernote" name="short_description"></textarea>
+                                <textarea class="form-control " name="short_description"></textarea>
                             </div>
 
                             <div class="mb-3">
