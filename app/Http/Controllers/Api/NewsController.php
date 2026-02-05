@@ -335,7 +335,7 @@ class NewsController extends Controller
             'status' => true,
             'code' => 200,
             'message' => 'Comments fetched successfully',
-            'data' => $data, // actual comment data
+            'data' => $data, // actual  data
             'pagination' => [
                 'total_page'   => $comments->lastPage(),
                 'per_page'     => $comments->perPage(),
