@@ -10,6 +10,7 @@ use App\Models\Like;
 use App\Models\News;
 use Google\Cloud\Storage\Connection\Rest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Str;
@@ -34,6 +35,8 @@ class NewsController extends Controller
 
             $query = News::where('status', 'publish')->withCount('likes')->withcount('dislikes')->withCount('comments')->latest('id');
 
+            Cache::flush();
+
             if ($request->filled('title')) {
                 $query->where('title', 'like', '%' . $request->title . '%');
             }
@@ -55,7 +58,7 @@ class NewsController extends Controller
                     'comments_count' => $news->comments_count,
                     'description' => Str::limit($news->short_description, 100),
                     'thumbnail'   => $news->thumbnail ? asset($news->thumbnail) : null,
-                    'date'        => $news->created_at->format('l F d Y'),
+                    'date'        => $news->created_at->format('l, F d Y'),
                 ];
             });
 
@@ -155,7 +158,6 @@ class NewsController extends Controller
 
     public function addComment(Request $request)
     {
-        // dd($request->all());
         try {
 
             $request->validate([
@@ -201,8 +203,6 @@ class NewsController extends Controller
             $newsId = $request->news_id;
 
             if ($request->action === 'like') {
-
-                // Remove dislike first
                 Dislike::where('user_id', $userId)
                     ->where('news_id', $newsId)
                     ->delete();
@@ -224,8 +224,6 @@ class NewsController extends Controller
             }
 
             if ($request->action === 'dislike') {
-
-                // Remove like first
                 Like::where('user_id', $userId)
                     ->where('news_id', $newsId)
                     ->delete();
@@ -267,21 +265,17 @@ class NewsController extends Controller
         $page    = $request->input('current_page', 1);
         $perPage = $request->input('per_page', 10);
         $newsId  = $request->input('news_id');
-
         if (!$newsId) {
             return response()->json([
                 'status' => false,
                 'message' => 'News ID is required',
             ], 400);
         }
-
-        // Fetch paginated comments with user and replies
         $comments = Comment::with(['user', 'replies.user'])
             ->where('news_id', $newsId)
             ->orderBy('created_at', 'desc')
             ->paginate($perPage, ['*'], 'page', $page);
 
-        // Transform comments
         $data = $comments->map(function ($comment) {
             return [
                 'id' => $comment->id,
@@ -290,7 +284,6 @@ class NewsController extends Controller
                 'name' => $comment->user?->name,
                 'comment' => $comment->comment,
                 'commented_at' => $comment->created_at->diffForHumans(),
-
                 'replies' => $comment->replies->map(function ($reply) {
                     return [
                         'id' => $reply->id,
@@ -303,7 +296,6 @@ class NewsController extends Controller
                 })->values(),
             ];
         });
-
 
         return response()->json([
             'status' => true,
@@ -321,8 +313,6 @@ class NewsController extends Controller
 
     public function news_type(Request $request)
     {
-
-
         $page    = $request->input('current_page', 1);
         $perPage = $request->input('per_page', 10);
 
