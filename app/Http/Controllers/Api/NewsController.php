@@ -21,7 +21,7 @@ class NewsController extends Controller
     public function news(Request $request)
     {
         try {
-            // 1️⃣ Validate inputs
+
             $request->validate([
                 'current_page' => 'sometimes|integer|min:1',
                 'per_page'     => 'sometimes|integer|min:1|max:100',
