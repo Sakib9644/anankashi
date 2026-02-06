@@ -128,34 +128,7 @@ class NewsController extends Controller
                 'total_dislike' => $news->dislikes->count(),
                 'is_liked' => $news->likes()->where('user_id', auth()->user()->id)->exists(),
                 'is_disliked' => $news->dislikes()->where('user_id', auth()->user()->id)->exists(),
-                // 'comments' => $news->comments->whereNull('parent_id')->values()->map(function ($comment) {
 
-                //     return [
-
-                //         'id' => $comment->id,
-                //         'comment' => $comment->comment,
-                //         'user' => $comment->user ? [
-                //             'name' => $comment->user->name,
-                //             'avatar' => $comment->user->avatar ? asset($comment->user->avatar) : null,
-                //             'commented_at' => $comment->created_at->diffForHumans(),
-                //         ] : null,
-                //         'replies' => $comment->replies->map(function ($reply) {
-                //             return [
-                //                 'id' => $reply->id,
-                //                 'comment' => $reply->comment,
-                //                 'user' => $reply->user ? [
-                //                     'name' => $reply->user->name,
-                //                     'avatar' => $reply->user->avatar ? asset($reply->user->avatar) : null,
-                //                     'commented_at' => $reply->created_at->diffForHumans(),
-                //                 ] : null,
-                //             ];
-                //         })
-
-
-
-
-                //     ];
-                // }),
             ];
 
             return response()->json([
