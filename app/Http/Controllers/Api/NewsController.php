@@ -309,7 +309,7 @@ class NewsController extends Controller
         return [
             'id' => $comment->id,
             'user_id' => $comment->user_id,
-            'is_mine' => $comment->user_id == $authUserId,
+            'is_mine' => $comment->user_id == $authUserId ? true : false,
             'is_liked' => $comment->likes()->where('user_id', $authUserId)->exists(),
             'avatar' => $comment->user?->avatar ? url($comment->user->avatar) : null,
             'name' => $comment->user?->name,
@@ -320,7 +320,7 @@ class NewsController extends Controller
                 return [
                     'id' => $reply->id,
                     'user_id' => $reply->user_id,
-                    'is_mine' => $reply->user_id == $authUserId,
+                    'is_mine' => $reply->user_id == $authUserId ? true : false,
                     'is_liked' => $reply->likes()->where('user_id', $authUserId)->exists(),
                     'avatar' => $reply->user?->avatar ? url($reply->user->avatar) : null,
                     'name' => $reply->user?->name,
