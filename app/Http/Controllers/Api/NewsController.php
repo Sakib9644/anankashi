@@ -324,7 +324,7 @@ class NewsController extends Controller
                     'is_liked' => $reply->likes()->where('user_id', $authUserId)->exists(),
                     'avatar' => $reply->user?->avatar ? url($reply->user->avatar) : null,
                     'name' => $reply->user?->name,
-                    'reply' => $reply->comment,
+                    'comment' => $reply->comment,
                     'commented_at' => $reply->created_at->diffForHumans(),
                 ];
             })->values(),
