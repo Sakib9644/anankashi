@@ -135,7 +135,7 @@ class NewsController extends Controller
                     }
                 }
             }
-            \DB::listen(function ($query) {
+            DB::listen(function ($query) {
     if (str_contains($query->sql, 'comments')) {
         dd($query->sql, $query->bindings);
     }
