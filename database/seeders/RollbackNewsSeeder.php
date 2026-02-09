@@ -27,6 +27,7 @@ class RollbackNewsSeeder extends Seeder
 
             $users = DB::table('users')->get();
 
+            DB::table('news_likes')->delete();
             $users->random(rand(1,$users->count()))->each(function ($user) use ($news) {
                 DB::table('likes')->insert([
                     'user_id'    => $user->id,
@@ -35,6 +36,8 @@ class RollbackNewsSeeder extends Seeder
                     'updated_at' => now(),
                 ]);
             });
+
+            DB::table('news_dislikes')->delete();
 
             $users->random(rand(1,$users->count()))->each(function ($user) use ($news) {
                 DB::table('news_dislikes')->insert([
@@ -45,6 +48,7 @@ class RollbackNewsSeeder extends Seeder
                 ]);
             });
 
+            DB::table('comments')->delete();
             $users->each(function ($user) use ($news) {
                 DB::table('comments')->insert([
                     'user_id'    => $user->id,
@@ -56,19 +60,19 @@ class RollbackNewsSeeder extends Seeder
             });
 
 
-            $newsDetails = DB::table('news_details')
-                ->where('news_id', $news->id)
-                ->get();
+            // $newsDetails = DB::table('news_details')
+            //     ->where('news_id', $news->id)
+            //     ->get();
 
-            foreach ($newsDetails as $detail) {
-                DB::table('news_details_images')
-                    ->insert([
-                        'image' => 'uploads/news/photo_2026-01-28_18-23-14.jpg',
-                        'news_details_id' => $detail->id,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-            }
+            // foreach ($newsDetails as $detail) {
+            //     DB::table('news_details_images')
+            //         ->insert([
+            //             'image' => 'uploads/news/photo_2026-01-28_18-23-14.jpg',
+            //             'news_details_id' => $detail->id,
+            //             'created_at' => now(),
+            //             'updated_at' => now()
+            //         ]);
+            // }
         }
     }
 }
