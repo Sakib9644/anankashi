@@ -45,7 +45,7 @@ class RollbackNewsSeeder extends Seeder
                 ]);
             });
 
-            $users->random(rand(1,$users->count()))->each(function ($user) use ($news) {
+            $users->each(function ($user) use ($news) {
                 DB::table('comments')->insert([
                     'user_id'    => $user->id,
                     'news_id'    => $news->id,
