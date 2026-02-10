@@ -306,7 +306,7 @@ class NewsController extends Controller
             ->where('news_id', $news->id)
             ->whereNull('parent_id')
             ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
+            ->paginate($perPage, ['*'], 'page', $page);
 
         $transformedData = $comments->getCollection()->map(function ($comment) use ($authUserId) {
             return [
