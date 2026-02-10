@@ -53,6 +53,10 @@ class Comment extends Model
     {
         return $this->hasMany(CommentLike::class);
     }
+    public function news()
+    {
+        return $this->belongsTo(News::class, 'news_id');
+    }
 
 
 }

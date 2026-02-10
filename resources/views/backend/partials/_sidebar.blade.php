@@ -182,6 +182,13 @@
                         <span class="side-menu__label">Chat</span>
                     </a>
                 </li>
+                <li class="slide">
+                    <a class="side-menu__item {{ request()->routeIs('admin.comment.*') ? 'has-link active' : '' }}"
+                        href="{{ route('admin.comment.index') }}">
+                        <i class="fa-brands fa-rocketchat side-menu__icon"></i>
+                        <span class="side-menu__label">Comments</span>
+                    </a>
+                </li>
 
                 @role('admin')
                     <li class="sliden {{ env('ACCESS') === false ? 'd-none' : '' }}">

@@ -13,6 +13,7 @@ use App\Http\Controllers\Web\Backend\ChatController;
 use App\Http\Controllers\Web\Backend\CMS\Web\Home\HomeAboutController;
 use App\Http\Controllers\Web\Backend\CMS\Web\Home\HomeExampleController;
 use App\Http\Controllers\Web\Backend\CMS\Web\Home\HomeIntroController;
+use App\Http\Controllers\Web\Backend\CommentController;
 use App\Http\Controllers\Web\Backend\ContactController;
 use App\Http\Controllers\Web\Backend\CountryController;
 use App\Http\Controllers\Web\Backend\CourseController;
@@ -271,6 +272,13 @@ Route::group(['middleware' => ['web-admin']], function () {
         Route::get('/ajax/new/count', 'newCount')->name('ajax.new.count');
         Route::get('/card/{slug}', 'card')->name('card');
     });
+    Route::controller(UserController::class)->prefix('comment')->group(function () {
+        Route::get('comments', [CommentController::class, 'index'])->name('comment.index');
+        Route::post('comments', [CommentController::class, 'store'])->name('comment.store'); // add or reply
+        Route::get('/{id}/edit', [CommentController::class, 'edit'])->name('comment.edit');
+        Route::put('{id}', [CommentController::class, 'update'])->name('comment.update');
+        Route::delete('comments/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
+    });
     Route::resource('permissions', PermissionController::class);
     Route::resource('roles', RoleController::class);
 
@@ -286,17 +294,18 @@ Route::group(['middleware' => ['web-admin']], function () {
         Route::post('setting/profile/update/Picture', 'UpdateProfilePicture')->name('update.profile.picture');
     });
 
+
     Route::controller(NewsController::class)->group(function () {
 
-    Route::get('news', 'index')->name('news.index');
-    Route::get('news/create', 'create')->name('news.create');
-    Route::post('news/store', 'store')->name('news.store');
-    Route::get('news/edit/{id}', 'edit')->name('news.edit');
-    Route::put('news/update/{id}', 'update')->name('news.update');
-    Route::delete('news/delete/{id}', 'destroy')->name('news.destroy');
-    Route::get('news/status/{id}', 'status')->name('news.status');
-    Route::get('/{id}', 'show')->name('news.show');
-});
+        Route::get('news', 'index')->name('news.index');
+        Route::get('news/create', 'create')->name('news.create');
+        Route::post('news/store', 'store')->name('news.store');
+        Route::get('news/edit/{id}', 'edit')->name('news.edit');
+        Route::put('news/update/{id}', 'update')->name('news.update');
+        Route::delete('news/delete/{id}', 'destroy')->name('news.destroy');
+        Route::get('news/status/{id}', 'status')->name('news.status');
+        Route::get('/{id}', 'show')->name('news.show');
+    });
 
     //! Route for Mail Settings
     Route::controller(MailSettingController::class)->group(function () {
@@ -487,7 +496,3 @@ Route::delete('file-delete/{file}', [FileManagerController::class, 'delete']);
 Route::controller(ReportController::class)->prefix('report')->name('report.')->group(function () {
     Route::get('/users', 'users')->name('users');
 });
-
-
-
-

@@ -305,6 +305,7 @@ class NewsController extends Controller
         ])
             ->where('news_id', $news->id)
             ->whereNull('parent_id')
+            ->orderBy('created_at', 'desc')
             ->paginate($perPage);
         $data = $comments->map(function ($comment) use ($authUserId) {
             return [
@@ -329,6 +330,7 @@ class NewsController extends Controller
                         'commented_at' => $reply->created_at->diffForHumans(),
 
                         // ✅ Sub-replies (2nd level)
+
                         'replies' => $reply->replies->map(function ($subReply) use ($authUserId) {
                             return [
                                 'id' => $subReply->id,
