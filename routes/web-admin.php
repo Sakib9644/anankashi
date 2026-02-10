@@ -277,7 +277,7 @@ Route::group(['middleware' => ['web-admin']], function () {
         Route::post('comments', [CommentController::class, 'store'])->name('comment.store'); // add or reply
         Route::get('/{id}/edit', [CommentController::class, 'edit'])->name('comment.edit');
         Route::put('{id}', [CommentController::class, 'update'])->name('comment.update');
-        Route::delete('comments/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
+        Route::delete('/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
     });
     Route::resource('permissions', PermissionController::class);
     Route::resource('roles', RoleController::class);
