@@ -77,8 +77,8 @@ class CommentController extends Controller
                             <i class="fas fa-trash"></i>
                         </button>
                         <button class="icon-btn reply-comment"
-                    data-id="' . $comment->id . '"
-                    data-news-id="' . $comment->news_id . '"
+                    data-id="' . $reply->id. '"
+                    data-news-id="' . $reply->news_id . '"
                     title="Reply">
                 <i class="fas fa-reply"></i>
             </button>
@@ -159,29 +159,13 @@ class CommentController extends Controller
             'parent_id' => 'nullable|exists:comments,id',
         ]);
 
-
-               $comment = Comment::where('id', $request->parent_id)
-                 ->where('news_id', $request->news_id)
-                 ->get();
-                 dd($comment->count());
-
-
-        if ($comment->count() < 1) {
-            dd(123);
-            $comment = Comment::create([
-                'user_id' => auth()->id(),
-                'news_id' => $request->news_id,
-                'parent_id' => $comment->first()->id,
-                'comment' => $request->comment,
-            ]);
-        } else {
             $comment = Comment::create([
                 'user_id' => auth()->id(),
                 'news_id' => $request->news_id,
                 'parent_id' => $request->parent_id,
                 'comment' => $request->comment,
             ]);
-        }
+
         return response()->json(['message' => 'Comment added successfully', 'comment' => $comment]);
     }
 
