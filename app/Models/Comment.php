@@ -41,7 +41,7 @@ class Comment extends Model
 
     public function replies()
     {
-        return $this->hasMany(Comment::class, 'parent_id')->with('replies');
+        return $this->hasMany(Comment::class, 'parent_id');
     }
 
     public function reaches(): MorphMany
@@ -52,6 +52,10 @@ class Comment extends Model
     public function likes()
     {
         return $this->hasMany(CommentLike::class);
+    }
+    public function news()
+    {
+        return $this->belongsTo(News::class, 'news_id');
     }
 
 
