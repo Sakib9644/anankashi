@@ -163,7 +163,6 @@ class CommentController extends Controller
                $comment = Comment::where('id', $request->parent_id)
                  ->where('news_id', $request->news_id)
                  ->get();
-                 dd($comment->count());
 
 
         if ($comment->count() < 1) {
