@@ -67,17 +67,14 @@ class RegisterController extends Controller
                 'slug'                => Str::random(8),
                 'is_terms'            => $validatedData['is_terms'] ? 1 : 0, // ✅ now safe
             ]);
-
-            // Create verification URL
             $verificationUrl = route('verify.email', [
                 'token' => $user->verification_token
             ]);
 
-            // Send verification email
             Mail::to($user->email)
                 ->send(new UserVerificationMail($user, $verificationUrl));
 
-            DB::commit(); // Commit transaction
+            DB::commit();
 
             return response()->json([
                 'status'  => true,
@@ -142,11 +139,8 @@ class RegisterController extends Controller
             $user = User::where('verification_token', $token)->first();
 
             if (!$user) {
-                // Invalid token
                 return redirect(Config('settings.frontend') . '?error=invalid_token&message=' . urlencode('Invalid verification token.'));
             }
-
-            // Check if already verified
             if ($user->otp_verified_at) {
                 return redirect(Config('settings.frontend') . '?error=already_verified&message=' . urlencode('Email is already verified. You can login now.'));
             }
@@ -154,16 +148,10 @@ class RegisterController extends Controller
             DB::beginTransaction();
 
             try {
-                // Update user verification status
                 $user->otp_verified_at = now();
                 $user->otp = null; // clear token
                 $user->save();
-
-
-
                 DB::commit();
-
-                // redirect with success message
                 return redirect(Config('settings.frontend') . '?verified=true&message=' . urlencode('Email verified successfully.'));
             } catch (Exception $e) {
                 DB::rollBack();

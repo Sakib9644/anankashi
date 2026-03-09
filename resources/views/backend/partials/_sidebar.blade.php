@@ -3,9 +3,7 @@
 @endphp
 
 <style>
-    /* =========================
-   SIDEBAR BASE
-========================= */
+
     .app-sidebar {
         background: linear-gradient(180deg, #0f172a, #020617);
         color: #000000;
@@ -22,9 +20,6 @@
         border-radius: 10px;
     }
 
-    /* =========================
-   BRAND LOGO
-========================= */
     .side-header {
         padding: 20px;
         text-align: center;
@@ -39,9 +34,6 @@
         transform: scale(1.05);
     }
 
-    /* =========================
-   SECTION TITLES
-========================= */
     .side-menu h3 {
         font-size: 11px;
         text-transform: uppercase;
@@ -50,9 +42,6 @@
         margin: 20px 15px 10px;
     }
 
-    /* =========================
-   MENU ITEMS
-========================= */
     .side-menu__item {
         display: flex;
         align-items: center;
@@ -88,9 +77,6 @@
         opacity: 1;
     }
 
-    /* =========================
-   SUB MENUS
-========================= */
     .slide-menu,
     .sub-slide-menu {
         padding-left: 12px;
@@ -112,9 +98,7 @@
         color: #fff;
     }
 
-    /* =========================
-   ANGLE ICON
-========================= */
+
     .angle,
     .sub-angle {
         margin-left: auto;
@@ -125,9 +109,6 @@
         transform: rotate(90deg);
     }
 
-    /* =========================
-   SEARCH BAR
-========================= */
     #menuSearching {
         margin: 12px;
         padding: 10px 14px;
@@ -182,13 +163,13 @@
                         <span class="side-menu__label">Chat</span>
                     </a>
                 </li>
-            <li class="slide">
-    <a class="side-menu__item {{ request()->routeIs('admin.comment.*') ? 'has-link active' : '' }}"
-       href="{{ route('admin.comment.index') }}">
-        <i class="fa fa-comments side-menu__icon"></i>
-        <span class="side-menu__label">Comments</span>
-    </a>
-</li>
+                <li class="slide">
+                    <a class="side-menu__item {{ request()->routeIs('admin.comment.*') ? 'has-link active' : '' }}"
+                        href="{{ route('admin.comment.index') }}">
+                        <i class="fa fa-comments side-menu__icon"></i>
+                        <span class="side-menu__label">Comments</span>
+                    </a>
+                </li>
 
 
                 @role('admin')

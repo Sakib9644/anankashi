@@ -14,9 +14,10 @@ class News extends Model
         return $this->hasMany(NewsDetails::class);
     }
 
-    public function comments() {
-    return $this->hasMany(Comment::class)->whereNull('parent_id');
-}
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->whereNull('parent_id');
+    }
 
 
     public function likes()

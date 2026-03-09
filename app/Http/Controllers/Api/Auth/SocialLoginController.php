@@ -39,7 +39,6 @@ class SocialLoginController extends Controller
         $request->validate([
             'token'         => 'required',
             'provider'      => 'required|in:google,facebook,apple',
-            'role'          => 'required|in:user,trainer',
         ]);
 
         try {
@@ -68,7 +67,7 @@ class SocialLoginController extends Controller
                         'status'            => $status ?? 'active',
                         'otp_verified_at' => now(),
                     ]);
-                    $user->assignRole($request->input('role'));
+                    $user->assignRole('user');
                     $isNewUser = true;
                     //notify to admin start
                     /* $admins = User::where('role', 'admin')->get();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use Str;
 use Yajra\DataTables\DataTables;
 
 class CommentController extends Controller
@@ -12,9 +13,6 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      */
-
-
-
 
     public function index(Request $request)
     {
@@ -53,7 +51,7 @@ class CommentController extends Controller
         // Level 0 (main comment)
         $html .= '
         <div class="comment-item level-0">
-            <div class="comment-text">' . e($comment->comment) . '</div>
+            <div class="comment-text">' . Str::limit(e($comment->comment), 20) . '</div>
 
         </div>
     ';
