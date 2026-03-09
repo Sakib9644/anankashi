@@ -36,75 +36,67 @@ class SocialLoginController extends Controller
 
     public function SocialLogin(Request $request)
     {
+
         $request->validate([
             'token'         => 'required',
             'provider'      => 'required|in:google,facebook,apple',
         ]);
 
-        try {
-            $provider   = $request->provider;
-            $socialUser = Socialite::driver($provider)->stateless()->userFromToken($request->token);
 
-            if ($socialUser) {
-                $user      = User::withTrashed()->where('email', $socialUser->email)->first();
-                if (!empty($user->deleted_at)) {
-                    return Helper::jsonErrorResponse('Your account has been deleted.', 410);
-                }
-                $isNewUser = false;
+        $provider   = $request->provider;
+        $socialUser = Socialite::driver($provider)->stateless()->userFromToken($request->token);
 
-                if (!$user) {
-                    $password = Str::random(16);
-                    /* if ($request->input('role') == 'trainer') {
+
+        if ($socialUser) {
+            $user      = User::withTrashed()->where('email', $socialUser->email)->first();
+            if (!empty($user->deleted_at)) {
+                return Helper::jsonErrorResponse('Your account has been deleted.', 410);
+            }
+            $isNewUser = false;
+
+            if (!$user) {
+                $password = Str::random(16);
+                /* if ($request->input('role') == 'trainer') {
                         $status = 'inactive';
                     } else {
                         $status = 'active';
                     } */
-                    $user     = User::create([
-                        'name'              => $socialUser->getName(),
-                        'email'             => $socialUser->getEmail(),
-                        'password'          => bcrypt($password),
-                        'avatar'            => $socialUser->getAvatar(),
-                        'status'            => $status ?? 'active',
-                        'otp_verified_at' => now(),
-                    ]);
-                    $user->assignRole('user');
-                    $isNewUser = true;
-                    //notify to admin start
-                    /* $admins = User::where('role', 'admin')->get();
+                $user     = User::create([
+                    'name'              => $socialUser->getName(),
+                    'email'             => $socialUser->getEmail(),
+                    'password'          => bcrypt($password),
+                    'avatar'            => $socialUser->getAvatar(),
+                    'status'            => $status ?? 'active',
+                    'slug' => Str::slug($socialUser->getName()) . '-' . Str::random(5),
+                    'otp_verified_at' => now(),
+                ]);
+                $user->assignRole('user');
+                $isNewUser = true;
+                //notify to admin start
+                /* $admins = User::where('role', 'admin')->get();
                     foreach ($admins as $admin) {
                         $admin->notify(new UserRegistrationNotification($user, "{$user->name} Has Joined the Platform – Review Details",));
                     } */
-                    //notify to admin end
-                }
-
-                Auth::login($user);
-                $token = auth('api')->login($user);
-
-                $data = User::select($this->select)->with('roles')->find($user->id);
-
-                return response()->json([
-                    'status'     => true,
-                    'message'    => 'User logged in successfully.',
-                    'code'       => 200,
-                    'token_type' => 'bearer',
-                    'token'      => $token,
-                    'expires_in' => auth('api')->factory()->getTTL() * 60,
-                    'data'       => $data
-                ], 200);
-            } else {
-                return Helper::jsonResponse(false, 'Unauthorized', 401);
+                //notify to admin end
             }
-        } catch (ValidationException $e) {
-            DB::rollBack();
 
-            return Helper::jsonErrorResponse($e->errors(), 422,$e->getMessage());
-        } catch (Throwable $e) {
-            DB::rollBack();
+            Auth::login($user);
+            $token = auth('api')->login($user);
 
-            return Helper::jsonErrorResponse(
-                config('app.debug') ? $e->getMessage() : 'Internal server error',
-                500
-            );
+            $data = User::select($this->select)->with('roles')->find($user->id);
+
+            return response()->json([
+                'status'     => true,
+                'message'    => 'User logged in successfully.',
+                'code'       => 200,
+                'token_type' => 'bearer',
+                'token'      => $token,
+                'expires_in' => auth('api')->factory()->getTTL() * 60,
+                'data'       => $data
+            ], 200);
+        } else {
+
+            return Helper::jsonResponse(false, 'Unauthorized', 401);
         }
     }
 }
