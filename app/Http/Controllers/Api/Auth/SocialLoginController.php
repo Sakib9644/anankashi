@@ -72,12 +72,7 @@ class SocialLoginController extends Controller
                 ]);
                 $user->assignRole('customer');
                 $isNewUser = true;
-                //notify to admin start
-                /* $admins = User::where('role', 'admin')->get();
-                    foreach ($admins as $admin) {
-                        $admin->notify(new UserRegistrationNotification($user, "{$user->name} Has Joined the Platform – Review Details",));
-                    } */
-                //notify to admin end
+        
             }
 
             Auth::login($user);
