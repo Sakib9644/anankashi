@@ -70,15 +70,15 @@ class SocialLoginController extends Controller
                     'slug' => Str::slug($socialUser->getName()) . '-' . Str::random(5),
                     'otp_verified_at' => now(),
                 ]);
-                $user->assignRole('customer');
+
                 $isNewUser = true;
-        
+
             }
 
             Auth::login($user);
             $token = auth('api')->login($user);
 
-            $data = User::select($this->select)->with('roles')->find($user->id);
+            $data = User::select($this->select)->find($user->id);
 
             return response()->json([
                 'status'     => true,
