@@ -117,6 +117,9 @@ Route::middleware(['auth:api'])->controller(NotificationController::class)->pref
     Route::get('status/read/{id}', 'readSingle');
 });
 
+Route::get('/verify-email-link', [ResetPasswordController::class, 'verifyEmailLink'])
+    ->name('verify.email.link')
+    ->middleware('signed');
 /*
 # Chat Route
 */

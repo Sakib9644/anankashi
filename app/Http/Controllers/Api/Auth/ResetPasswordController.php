@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use App\Helpers\Helper;
 use App\Mail\OtpMail;
+use App\Mail\VerificationMail;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -26,33 +28,46 @@ class ResetPasswordController extends Controller
         parent::__construct();
         $this->select = ['id', 'name', 'email', 'avatar'];
     }
+
+    public function verifyEmailLink(Request $request)
+    {
+        $user = User::findOrFail($request->user);
+
+        $token = Str::random(60);
+
+        $user->reset_password_token = $token;
+        $user->reset_password_token_expire_at = Carbon::now()->addHour();
+        $user->save();
+
+        // Redirect to external page
+        return redirect('https://cryptax-dev.vercel.app/reset-password/verified?email=' .  $user->email . '&token=' . $token);
+    }
     public function forgotPassword(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email|exists:users,email',
-        ]);
+
         try {
-            $email = $request->input('email');
-            $otp   = rand(1000, 9999);
-            $user  = User::where('email', $email)->first();
+            $request->validate([
+                'email' => 'required|email|exists:users,email',
+            ]);
 
-            if ($user) {
-                Mail::to($email)->send(new OtpMail($otp, $user, 'Reset Your Password'));
+            $user = User::where('email', $request->email)->first();
 
-                $user->otp            = $otp;
-                $user->otp_expires_at = Carbon::now()->addMinutes(60);
-                $user->save();
+            if (!$user) {
+                return Helper::jsonErrorResponse('User not found', 404);
+            };
 
-                return Helper::jsonResponse(true, 'OTP Code Sent Successfully Please Check Your Email.', 200);
-            } else {
-                return Helper::jsonErrorResponse('Invalid Email Address', 404);
-            }
+            $verificationUrl = URL::temporarySignedRoute(
+                'verify.email.link',
+                Carbon::now()->addMinutes(60),
+                ['user' => $user->id]
+            );
+
+            Mail::to($user->email)->send(new VerificationMail($user, $verificationUrl));
+
+            return Helper::jsonResponse(true, 'Verification link sent to your email.', 200);
         } catch (ValidationException $e) {
-            DB::rollBack();
-
             return Helper::jsonErrorResponse($e->errors(), 422, $e->getMessage());
         } catch (Throwable $e) {
-            DB::rollBack();
 
             return Helper::jsonErrorResponse(
                 config('app.debug') ? $e->getMessage() : 'Internal server error',
